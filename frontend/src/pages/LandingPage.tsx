@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import PageContainer from "../components/common/PageContainer";
 import ComponentWrapper from "../components/common/ComponentWrapper";
-import { useColorScheme } from "@mui/material/styles";
+
 const keywords = [
   "프론트엔드",
   "백엔드",
@@ -22,37 +22,26 @@ const keywords = [
 ];
 
 const LandingPage = () => {
-  const { mode, setMode } = useColorScheme();
-  if (!mode) return null;
-  console.log("mode:", mode);
   return (
     <PageContainer>
       <ComponentWrapper>
-        <select
-          onChange={(event) =>
-            setMode(event.target.value as "system" | "light" | "dark")
-          }
-        >
-          <option value="system">System</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-        </select>
         {/* 첫 번째 섹션 */}
         <Box
           sx={{
             padding: "80px 20px",
             display: "flex",
             flexDirection: "column",
-            borderBottom: (theme) => {
-              return {
-                ...theme.applyStyles("light", {
-                  borderBottom: "1px solid red",
-                }),
-                ...theme.applyStyles("dark", {
-                  borderBottom: "1px solid #30363d",
-                }),
-              };
-            },
+            // borderBottom: (theme) => {
+            //   return {
+            //     ...theme.applyStyles("light", {
+            //       borderBottom: "1px solid red",
+            //     }),
+            //     ...theme.applyStyles("dark", {
+            //       borderBottom: "1px solid #30363d",
+            //     }),
+            //   };
+            // },
+            borderBottom: "1px solid #e0e0e0",
           }}
         >
           <Typography
@@ -94,7 +83,7 @@ const LandingPage = () => {
                 boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
                 cursor: "pointer",
                 "&:hover": {
-                  border: "1px solid black",
+                  border: "1px solid white",
                 },
               }}
             >
