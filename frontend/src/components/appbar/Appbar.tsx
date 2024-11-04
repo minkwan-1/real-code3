@@ -5,6 +5,8 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import Logo from "./Logo";
 import AuthButton from "./AuthButton";
 import { useColorScheme } from "@mui/material/styles";
+import EditIcon from "@mui/icons-material/Edit";
+import { useNavigate } from "react-router-dom";
 
 function Appbar() {
   const { mode, setMode } = useColorScheme();
@@ -12,6 +14,7 @@ function Appbar() {
   const toggleMode = () => {
     setMode(mode === "light" ? "dark" : "light");
   };
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -41,13 +44,21 @@ function Appbar() {
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: 2,
           }}
         >
           <AuthButton />
-          <SearchIcon sx={{ cursor: "pointer" }} />
+          <IconButton
+            sx={{ cursor: "pointer", marginLeft: "10px" }}
+            color="inherit"
+          >
+            <SearchIcon />
+          </IconButton>
+
           <IconButton onClick={toggleMode} color="inherit">
             {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+          </IconButton>
+          <IconButton color="inherit" onClick={() => navigate("/edit")}>
+            <EditIcon />
           </IconButton>
         </Box>
       </Container>
