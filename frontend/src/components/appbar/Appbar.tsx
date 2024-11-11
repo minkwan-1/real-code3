@@ -1,4 +1,4 @@
-import { Box, Container, IconButton } from "@mui/material";
+import { Box, Container, IconButton, Typography } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
@@ -7,14 +7,41 @@ import AuthButton from "./AuthButton";
 import { useColorScheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function Appbar() {
   const { mode, setMode } = useColorScheme();
+  const [username, setUsername] = useState<string | null>(null);
+
+  const navigate = useNavigate(); // navigate 훅을 추가
 
   const toggleMode = () => {
     setMode(mode === "light" ? "dark" : "light");
   };
-  const navigate = useNavigate();
+
+  const handleSignOut = (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // 로그아웃 시 localStorage에서 accessToken과 username 제거
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("username");
+
+      // 로그아웃 후 "/" 경로로 이동
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    // 로그인된 상태에서 localStorage에 저장된 username을 가져옴
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      // 실제 앱에서는 여기서 API 호출을 통해 사용자 정보를 가져올 수 있음
+      // 예시로 username을 localStorage에서 가져옴 (백엔드에서 응답받은 username을 저장해야 함)
+      setUsername(localStorage.getItem("username") || "User"); // 실제로는 서버에서 받은 값을 저장
+    }
+  }, []);
 
   return (
     <Box
@@ -46,6 +73,14 @@ function Appbar() {
             alignItems: "center",
           }}
         >
+          {username ? (
+            <>
+              <Typography variant="body1" sx={{ marginRight: 2 }}>
+                {username}
+              </Typography>
+              <button onClick={handleSignOut}>로그아웃</button>
+            </>
+          ) : null}
           <AuthButton />
           <IconButton
             sx={{ cursor: "pointer", marginLeft: "10px" }}

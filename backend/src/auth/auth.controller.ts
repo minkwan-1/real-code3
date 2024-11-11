@@ -11,6 +11,9 @@ import { User } from './user.entity';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  // sign-up을 처리하는 메서드
+  // 요청 본문에서 AuthCredentialDto를 받고, ValidationPipe를 통해 validation 수행
+  // authService의 세부 로직에서 회원가입을 처리
   @Post('/signup')
   signUp(
     @Body(ValidationPipe) authCredentialDto: AuthCredentialDto,
@@ -18,6 +21,9 @@ export class AuthController {
     return this.authService.signUp(authCredentialDto);
   }
 
+  // sign-in을 처리하는 메서드
+  // 요청 본문에서 AuthCredentialDto를 받고, ValidationPipe를 통해 validation 수행
+  // authService의 세부 로직에서 로그인을 처리
   @Post('/signin')
   signIn(
     @Body(ValidationPipe) authCredentialDto: AuthCredentialDto,
@@ -25,6 +31,8 @@ export class AuthController {
     return this.authService.signIn(authCredentialDto);
   }
 
+  // 인증된 사용자만 접근할 수 있는 테스트 메서드
+  // AuthGuard를 사용하여 인증된 사용자만 접근 허용
   @Post('/authTest')
   @UseGuards(AuthGuard())
   test(@GetUser() user: User) {

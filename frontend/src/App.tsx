@@ -1,8 +1,11 @@
 import { Route, Routes } from "react-router-dom";
-import LandingPage from "./pages/LandingPage";
-import HomePage from "./pages/HomePage";
-import EditPage from "./pages/EditPage";
-import LoginByEmailPage from "./pages/LoginByEmailPage";
+import {
+  LandingPage,
+  HomePage,
+  EditPage,
+  LoginByEmailPage,
+  SignInPage,
+} from "./pages";
 
 function App() {
   return (
@@ -11,6 +14,7 @@ function App() {
       <Route path="/home" element={<HomePage />} />
       <Route path="/edit" element={<EditPage />} />
       <Route path="/login" element={<LoginByEmailPage />} />
+      <Route path="/signin" element={<SignInPage />} />
     </Routes>
   );
 }
