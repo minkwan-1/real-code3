@@ -1,23 +1,30 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User } from './user.schema';
-
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { UserRepository } from './user.repository';
+import { AuthCredentialDto } from './dto/auth-credential.dto';
+import * as bcrypt from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    private userRepository: UserRepository,
+    private jwtService: JwtService,
+  ) {}
 
-  async validateUser(profile: any) {
-    const user = await this.userModel.findOne({ googleId: profile.id });
-    if (user) {
-      return user;
+  async signUp(authCredentialDto: AuthCredentialDto): Promise<void> {
+    return this.userRepository.createUser(authCredentialDto);
+  }
+
+  async signIn(
+    authCredentialDto: AuthCredentialDto,
+  ): Promise<{ accessToken: string }> {
+    const { username, password } = authCredentialDto;
+    const user = await this.userRepository.findOneBy({ username });
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const payload = { username };
+      const accessToken = await this.jwtService.sign(payload);
+      return { accessToken };
     } else {
-      const newUser = new this.userModel({
-        googleId: profile.id,
-        username: profile.displayName,
-        thumbnail: profile._json.picture,
-      });
-      return newUser.save();
+      throw new UnauthorizedException('login failed');
     }
   }
 }

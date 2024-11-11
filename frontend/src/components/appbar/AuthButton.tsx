@@ -2,10 +2,12 @@ import { Box, Typography, IconButton } from "@mui/material";
 import { useState, useEffect } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { slide1, slide2, slide3, google2 } from "../../images";
+import { useNavigate } from "react-router-dom";
 
 const AuthButton = () => {
   const [open, setOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const navigate = useNavigate();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -148,7 +150,7 @@ const AuthButton = () => {
               }}
             >
               <IconButton
-                sx={{ position: "absolute", top: 8, right: 8 }}
+                sx={{ position: "absolute", top: 8, right: 8, color: "black" }}
                 onClick={handleClose}
               >
                 <CloseIcon />
@@ -166,7 +168,7 @@ const AuthButton = () => {
                   borderBottom: "1px solid #e0e0e0",
                 }}
               >
-                <Typography sx={{ mb: 2, fontSize: "16px" }}>
+                <Typography sx={{ mb: 2, fontSize: "16px", color: "black" }}>
                   구글 아이디로 3초만에 시작해봐요!
                 </Typography>
                 <Box>
@@ -197,22 +199,7 @@ const AuthButton = () => {
                 }}
               >
                 <Box
-                  sx={{
-                    bgcolor: "white",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    color: "#666",
-                    height: "60px",
-                    width: "100%",
-                    fontSize: "16px",
-                  }}
-                >
-                  내 RealCode_의 구글 계정을 모르겠어요
-                </Box>
-                <Box
+                  onClick={() => navigate("/login")}
                   sx={{
                     bgcolor: "white",
                     display: "flex",

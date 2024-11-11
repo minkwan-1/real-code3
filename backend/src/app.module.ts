@@ -1,20 +1,10 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { BoardsModule } from './boards/boards.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeORMConfig } from './configs/typeorm.config';
 import { AuthModule } from './auth/auth.module';
-import { ConfigModule } from './config/config.module';
-import { ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [
-    ConfigModule,
-    MongooseModule.forRootAsync({
-      useFactory: (configService: ConfigService) => {
-        const { uri, options } = configService.get('mongo');
-        return { uri, ...options };
-      },
-      inject: [ConfigService],
-    }),
-    AuthModule,
-  ],
+  imports: [TypeOrmModule.forRoot(typeORMConfig), BoardsModule, AuthModule],
 })
 export class AppModule {}
