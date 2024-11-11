@@ -36,6 +36,7 @@ function Appbar() {
   useEffect(() => {
     // 로그인된 상태에서 localStorage에 저장된 username을 가져옴
     const token = localStorage.getItem("accessToken");
+    console.log(token);
     if (token) {
       // 실제 앱에서는 여기서 API 호출을 통해 사용자 정보를 가져올 수 있음
       // 예시로 username을 localStorage에서 가져옴 (백엔드에서 응답받은 username을 저장해야 함)
@@ -78,10 +79,28 @@ function Appbar() {
               <Typography variant="body1" sx={{ marginRight: 2 }}>
                 {username}
               </Typography>
-              <button onClick={handleSignOut}>로그아웃</button>
+              <Box
+                sx={{
+                  width: "64px",
+                  height: "28px",
+                  border: "1px solid #959595",
+                  borderRadius: "16px",
+                  color: "#666",
+                  fontSize: "12px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  cursor: "pointer",
+                }}
+                onClick={handleSignOut}
+              >
+                로그아웃
+              </Box>
             </>
-          ) : null}
-          <AuthButton />
+          ) : (
+            <AuthButton />
+          )}
+
           <IconButton
             sx={{ cursor: "pointer", marginLeft: "10px" }}
             color="inherit"

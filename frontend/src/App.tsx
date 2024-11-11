@@ -5,6 +5,7 @@ import {
   EditPage,
   LoginByEmailPage,
   SignInPage,
+  BoardTestPage,
 } from "./pages";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
       <Route path="/edit" element={<EditPage />} />
       <Route path="/login" element={<LoginByEmailPage />} />
       <Route path="/signin" element={<SignInPage />} />
+      <Route path="/test" element={<BoardTestPage />} />
     </Routes>
   );
 }
