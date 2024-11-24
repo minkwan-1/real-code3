@@ -8,7 +8,7 @@ import { useColorScheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-
+import SignOutButton from "./SignOutButton";
 function Appbar() {
   const { mode, setMode } = useColorScheme();
   const [username, setUsername] = useState<string | null>(null);
@@ -17,20 +17,6 @@ function Appbar() {
 
   const toggleMode = () => {
     setMode(mode === "light" ? "dark" : "light");
-  };
-
-  const handleSignOut = (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      // 로그아웃 시 localStorage에서 accessToken과 username 제거
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("username");
-
-      // 로그아웃 후 "/" 경로로 이동
-      navigate("/");
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   useEffect(() => {
@@ -79,23 +65,7 @@ function Appbar() {
               <Typography variant="body1" sx={{ marginRight: 2 }}>
                 {username}
               </Typography>
-              <Box
-                sx={{
-                  width: "64px",
-                  height: "28px",
-                  border: "1px solid #959595",
-                  borderRadius: "16px",
-                  color: "#666",
-                  fontSize: "12px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  cursor: "pointer",
-                }}
-                onClick={handleSignOut}
-              >
-                로그아웃
-              </Box>
+              <SignOutButton />
             </>
           ) : (
             <AuthButton />

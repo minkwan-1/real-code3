@@ -1,10 +1,27 @@
 import { Module } from '@nestjs/common';
-import { BoardsModule } from './boards/boards.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeORMConfig } from './configs/typeorm.config';
+
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+
 import { AuthModule } from './auth/auth.module';
 
+import { AppConfigModule } from './config/app/app-config.module';
+import { GoogleConfigModule } from './config/google';
+import { KakaoConfigModule } from './config/kakao';
+import { NaverConfigModule } from './config/naver';
+import { JwtConfigModule } from './config/jwt';
+
+const configModules = [
+  AppConfigModule,
+  GoogleConfigModule,
+  KakaoConfigModule,
+  NaverConfigModule,
+  JwtConfigModule,
+];
+
 @Module({
-  imports: [TypeOrmModule.forRoot(typeORMConfig), BoardsModule, AuthModule],
+  imports: [...configModules, AuthModule],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

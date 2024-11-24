@@ -13,11 +13,10 @@ function Footer() {
     <Box
       sx={{
         width: "100%",
-        height: "auto", // 높이를 자동으로 조정
+        height: "auto",
         borderTop: "1px solid #333",
         bgcolor: "#000",
         py: 4,
-        // mt: 4,
       }}
     >
       <Container

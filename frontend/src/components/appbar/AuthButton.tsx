@@ -1,7 +1,7 @@
 import { Box, Typography, IconButton } from "@mui/material";
 import { useState, useEffect } from "react";
 import CloseIcon from "@mui/icons-material/Close";
-import { slide1, slide2, slide3, google2 } from "../../images";
+import { slide1, slide2, slide3, kakao, google, naver } from "../../images"; // Add the image imports
 import { useNavigate } from "react-router-dom";
 
 const AuthButton = () => {
@@ -12,12 +12,6 @@ const AuthButton = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  // 구글 로그인 요청 함수
-  const handleGoogleLogin = () => {
-    window.location.href = `http://localhost:3000/auth/google`; // NestJS 구글 로그인 엔드포인트
-  };
-
-  // 슬라이더 자동 전환
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % 3);
@@ -25,8 +19,32 @@ const AuthButton = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // 슬라이더 이미지 배열
   const images = [slide1, slide2, slide3];
+
+  const handleSocialLogin = (provider: string) => {
+    let url = "";
+    const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
+
+    switch (provider) {
+      case "google":
+        url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${
+          import.meta.env.VITE_APP_GOOGLE_CLIENT_ID
+        }&redirect_uri=${REDIRECT_URI}/callback&response_type=code&access_type=offline&scope=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile&prompt=select_account`;
+        break;
+      case "kakao":
+        url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${
+          import.meta.env.VITE_APP_KAKAO_CLIENT_ID
+        }&redirect_uri=${REDIRECT_URI}/callback&prompt=select_account`;
+        break;
+      case "naver":
+        url = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${
+          import.meta.env.VITE_APP_NAVER_CLIENT_ID
+        }&redirect_uri=${REDIRECT_URI}/callback&state=naverLoginState&auth_type=reauthenticate`;
+        break;
+    }
+
+    window.location.href = url;
+  };
 
   return (
     <>
@@ -74,7 +92,6 @@ const AuthButton = () => {
               position: "relative",
             }}
           >
-            {/* 왼쪽 이미지 슬라이더 */}
             <Box
               sx={{
                 width: "50%",
@@ -139,7 +156,6 @@ const AuthButton = () => {
               </Box>
             </Box>
 
-            {/* 오른쪽 콘텐츠 영역 */}
             <Box
               sx={{
                 bgcolor: "#f8f8f8",
@@ -156,7 +172,6 @@ const AuthButton = () => {
                 <CloseIcon />
               </IconButton>
 
-              {/* 위쪽 절반: 구글 로그인 버튼 */}
               <Box
                 sx={{
                   flex: 1,
@@ -169,24 +184,68 @@ const AuthButton = () => {
                 }}
               >
                 <Typography sx={{ mb: 2, fontSize: "16px", color: "black" }}>
-                  구글 아이디로 3초만에 시작해봐요!
+                  소셜 계정으로 3초만에 시작하세요
                 </Typography>
-                <Box>
-                  <img
-                    src={google2}
-                    alt="구글 로그인"
-                    style={{
-                      width: "100%",
-                      height: "60px",
-                      objectFit: "contain",
+                <Box
+                  sx={{ display: "flex", flexDirection: "column", gap: "20px" }}
+                >
+                  {/* Use IconButton with images */}
+                  <Box
+                    onClick={() => handleSocialLogin("naver")}
+                    sx={{
                       cursor: "pointer",
+                      width: "250px",
+                      height: "40px",
                     }}
-                    onClick={handleGoogleLogin}
-                  />
+                  >
+                    <img
+                      src={naver}
+                      alt="Naver"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        // objectFit: "cover",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </Box>
+                  <Box
+                    onClick={() => handleSocialLogin("kakao")}
+                    sx={{ cursor: "pointer", width: "250px", height: "40px" }}
+                  >
+                    <img
+                      src={kakao}
+                      alt="Kakao"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        // objectFit: "cover",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </Box>
+                  <Box
+                    onClick={() => handleSocialLogin("google")}
+                    sx={{
+                      cursor: "pointer",
+                      width: "250px",
+                      height: "40px",
+                    }}
+                  >
+                    <img
+                      src={google}
+                      alt="Google"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        // objectFit: "cover",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </Box>
                 </Box>
               </Box>
 
-              {/* 아래쪽 절반: 기타 옵션 */}
               <Box
                 sx={{
                   flex: 1.5,

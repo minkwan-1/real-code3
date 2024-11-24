@@ -1,41 +1,56 @@
-import { Post, Body, UseGuards } from '@nestjs/common';
-import { Controller } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { Response } from 'express';
+
 import { AuthService } from './auth.service';
-import { AuthCredentialDto } from './dto/auth-credential.dto';
-import { ValidationPipe } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from './get-user.decorator';
-import { User } from './user.entity';
+import { CookieSettingHelper } from '../helpers/cookie-setting.helper';
+
+import { JwtAuthGuard } from './guards/auth.guard';
+import { JwtRefreshGuard } from './guards/refresh.guard';
+import { User } from '../users/decorators/user.decorator';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly cookieSettingHelper: CookieSettingHelper,
+  ) {}
 
-  // sign-up을 처리하는 메서드
-  // 요청 본문에서 AuthCredentialDto를 받고, ValidationPipe를 통해 validation 수행
-  // authService의 세부 로직에서 회원가입을 처리
-  @Post('/signup')
-  signUp(
-    @Body(ValidationPipe) authCredentialDto: AuthCredentialDto,
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  // TODO: Replace return type any with User type and move this method to UsersController later,
+  async getUserInfo(@User() user: any): Promise<any | never> {
+    return user;
+  }
+
+  @Post('refresh')
+  @UseGuards(JwtRefreshGuard)
+  @HttpCode(HttpStatus.OK)
+  async refreshAccessToken(
+    @User() user: any,
+    @Res({ passthrough: true }) response: Response,
   ): Promise<void> {
-    return this.authService.signUp(authCredentialDto);
+    const tokenData = await this.authService.generateAndSaveTokens(user);
+
+    this.cookieSettingHelper.setCookies(response, tokenData);
   }
 
-  // sign-in을 처리하는 메서드
-  // 요청 본문에서 AuthCredentialDto를 받고, ValidationPipe를 통해 validation 수행
-  // authService의 세부 로직에서 로그인을 처리
-  @Post('/signin')
-  signIn(
-    @Body(ValidationPipe) authCredentialDto: AuthCredentialDto,
-  ): Promise<{ accessToken: string }> {
-    return this.authService.signIn(authCredentialDto);
-  }
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async logout(
+    @User() user: any,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<void> {
+    await this.authService.deleteRefreshTokenData(user);
 
-  // 인증된 사용자만 접근할 수 있는 테스트 메서드
-  // AuthGuard를 사용하여 인증된 사용자만 접근 허용
-  @Post('/authTest')
-  @UseGuards(AuthGuard())
-  test(@GetUser() user: User) {
-    console.log('user', user);
+    this.cookieSettingHelper.clearCookies(response);
   }
 }

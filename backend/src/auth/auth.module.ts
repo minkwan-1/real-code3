@@ -1,39 +1,29 @@
-import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user.entity';
-import { UserRepository } from './user.repository';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './jwt.strategy';
+import { Module } from '@nestjs/common'; // NestJS의 모듈 데코레이터
+
+import { AuthController } from './auth.controller'; // 인증 관련 요청을 처리하는 AuthController
+import { AuthService } from './auth.service'; // 인증 비즈니스 로직을 처리하는 AuthService
+import { CookieSettingHelper } from '../helpers/cookie-setting.helper'; // 쿠키 설정을 돕는 헬퍼 클래스
+import { UserTokenService } from '../userToken/userToken.service'; // 사용자 토큰 관련 로직을 처리하는 서비스
+import { UsersService } from '../users/users.module'; // 사용자 정보를 처리하는 서비스
+
+import { AuthStrategy } from './strategies/auth.strategy'; // 인증 전략을 정의한 AuthStrategy
+import { RefreshStrategy } from './strategies/refresh.strategy'; // 리프레시 토큰 전략을 정의한 RefreshStrategy
+
+import { TokenValidationHelper } from '../helpers/token-validation.helper'; // 토큰 유효성 검사를 돕는 헬퍼 클래스
+import { TokenModule } from '../token/token.module'; // 토큰 관련 모듈
+
 @Module({
-  imports: [
-    // PassportModule을 설정하여 JWT 인증을 기본 전략으로 사용하도록 지정
-    PassportModule.register({ defaultStrategy: 'jwt' }),
-
-    // JwtModule을 설정하여 JWT 토큰을 생성하고, 만료 시간을 1시간으로 설정
-    JwtModule.register({
-      secret: 'Secret1234',
-      signOptions: {
-        expiresIn: 60 * 60,
-      },
-    }),
-
-    // TypeOrmModule을 통해 User 엔티티를 사용하여 DB와 연동
-    TypeOrmModule.forFeature([User]),
+  imports: [TokenModule], // 이 모듈에서 사용할 TokenModule
+  controllers: [AuthController], // 인증 요청을 처리할 컨트롤러
+  providers: [
+    UsersService,
+    AuthService,
+    UserTokenService, // 사용자 토큰 관리 로직
+    CookieSettingHelper, // 쿠키 설정 관련 헬퍼 클래스
+    TokenValidationHelper, // 토큰 유효성 검사 관련 헬퍼 클래스
+    AuthStrategy, // 기본 인증 전략
+    RefreshStrategy, // 리프레시 토큰 전략
   ],
-
-  // AuthController를 모듈에 등록
-  controllers: [AuthController],
-
-  // 인증 관련 로직을 처리하는 AuthService
-  // DB 연동을 위한 UserRepository
-  // JWT 인증 전략을 정의하는 JwtStrategy
-  providers: [AuthService, UserRepository, JwtStrategy],
-
-  // JwtStrategy를 다른 모듈에서도 사용할 수 있도록
-  // PassportModule을 다른 모듈에서도 사용할 수 있도록
-  exports: [JwtStrategy, PassportModule],
+  exports: [AuthService, CookieSettingHelper], // AuthService와 CookieSettingHelper를 다른 모듈에서 사용할 수 있도록 export
 })
 export class AuthModule {}
